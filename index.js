@@ -9,29 +9,27 @@
   </form>
 </header>
 
-<section class="breweries-list-section">
     <article>
     <ul class="breweries-list">
         <li>
-        <h2>Snow Belt Brew</h2>
-        <div class="type">micro</div>
-        <section class="address">
-            <h3>Address:</h3>
-            <p>9511 Kile Rd</p>
-            <p><strong>Chardon, 44024</strong></p>
-        </section>
-        <section class="phone">
-            <h3>Phone:</h3>
-            <p>N/A</p>
-        </section>
-        <section class="link">
-            <a href="null" target="_blank">Visit Website</a>
-        </section>
+            <h2>Snow Belt Brew</h2>
+            <div class="type">micro</div>
+            <section class="address">
+                <h3>Address:</h3>
+                <p>9511 Kile Rd</p>
+                <p><strong>Chardon, 44024</strong></p>
+            </section>
+            <section class="phone">
+                <h3>Phone:</h3>
+                <p>N/A</p>
+            </section>
+            <section class="link">
+                <a href="null" target="_blank">Visit Website</a>
+            </section>
         </li>
         // More list elements
     </ul>
-    </article>
-</section> */}
+    </article> */}
 
 
 /////////////////////////////// FILTER SECTION TEMPLATE /////////////////////////////////////////
@@ -48,7 +46,7 @@
       <option value="brewpub">Brewpub</option>
     </select>
   </form>
-  
+
   <div class="filter-by-city-heading">
     <h3>Cities</h3>
     <button class="clear-all-btn">clear all</button>
@@ -83,6 +81,10 @@
 const state = {
     breweries:[]
 }
+const breweriesListSection = document.querySelector('.breweries-list-section')
+const breweriesArticle = document.createElement('article')
+const breweriesList = document.createElement('ul')
+breweriesList.setAttribute('class', '.breweries-list')
 
 const stateForm = document.getElementById('select-state-form')
 const stateInput = document.getElementById('select-state')
@@ -103,6 +105,52 @@ getBreweries().then(breweries => state.breweries = breweries)
 
 // renders the breweries-list-section inside the list-section based on state.breweries
 function renderBreweriesList() {
+    breweriesArticle.innerHTML = ''
+    
+    for(const brewery of state.breweries){
+        const breweriesLiEl = document.createElement('li')
+        
+        const breweryHeader = document.createElement('h2')
+        breweryHeader.textContent = brewery.name
+
+        const breweryType = document.createElement('div')
+        breweryType.setAttribute('class', 'type')
+        breweryType.textContent = brewery.brewery_type
+
+        const breweryAddress = document.createElement('section')
+        breweryAddress.setAttribute('class', '.address')
+
+        const breweryAddressH3 = document.createElement('h3')
+        breweryAddressH3.textContent = 'Address:'
+        const breweryAddressStreet = document.createElement('p')
+        breweryAddressStreet.textContent = brewery.street
+        const breweryAddressCity = document.createElement('p')
+        breweryAddressCity.textContent = `${brewery.city}, ${brewery.postal_code}`
+        breweryAddress.append(breweryAddressH3, breweryAddressStreet, breweryAddressCity)
+
+        const breweryPhone = document.createElement('section')
+        breweryPhone.setAttribute('class','.phone')
+
+        const breweryPhoneH3 = document.createElement('h3')
+        breweryPhoneH3.textContent= 'Phone:'
+        const breweryPhoneNumber = document.createElement('p')
+        breweryPhoneNumber.textContent = brewery.phone
+        breweryPhone.append(breweryPhoneH3, breweryPhoneNumber)
+
+        const breweryWebsite = document.createAttribute('section')
+        breweryWebsite.setAttribute('class','link')
+        
+        const breweryWebsiteLink = document.createAttribute('a')
+        breweryWebsiteLink.textContent = 'Visit Website'
+        breweryWebsiteLink.setAttribute('href', `${brewery.website_url}`)
+        breweryWebsiteLink.setAttribute('target', 'blank')
+        breweryWebsite.append(breweryWebsiteLink)
+
+        breweriesLiEl.append(breweryHeader,breweryType,breweryAddress,breweryPhone,breweryWebsite)
+        breweriesList.append(breweriesLiEl)
+        breweriesArticle.append(breweriesList)
+        breweriesListSection.append(breweriesArticle)
+    }
 
 }
 // renders the cities of every state
