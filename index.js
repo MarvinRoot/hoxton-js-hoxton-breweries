@@ -5,8 +5,9 @@
 // So we just update the state and rerender.
 const state = {
     breweries:[],
-    typesOfBrewery: ['micro', 'regional', 'brewpub']
-    
+    typesOfBrewery: ['micro', 'regional', 'brewpub'],
+    selectedCities: [],
+    selectedBreweryType: []
 }
 const main = document.querySelector('main');
 const breweriesArticle = document.createElement('article')
@@ -19,14 +20,27 @@ stateInput.setAttribute('placeholder', 'enter a state')
 
 const cityForm = document.querySelector('#filter-by-city-form')
 
-//Function that returns the first 10 breweries of a state & are part of the 3 brewery types
-function getBreweriesToDisplay(){
-  state.breweries = state.breweries.filter(brewery =>
-    state.typesOfBrewery.includes(brewery.brewery_type)
-    )
+const filterByTypeSelect = document.querySelector('#filter-by-type')
 
-  state.breweries = state.breweries.slice(0,10)
-  return state.breweries
+//Listens to the brewery type selection
+function listenToFilterByType(){
+  filterByTypeSelect.addEventListener('change', function(){
+    state.selectedBreweryType = []
+    state.selectedBreweryType.push(filterByTypeSelect.value)
+    renderBreweriesList(state.selectedBreweryType)
+    renderCityList()
+  })
+}
+
+//Returns a list of filtered breweries
+function getBreweriesToDisplay(breweryType){
+  let breweriesToDisplay = state.breweries
+  breweriesToDisplay = breweriesToDisplay.filter(brewery =>
+    breweryType.includes(brewery.brewery_type)
+    )
+  
+    breweriesToDisplay = breweriesToDisplay.slice(0,10)
+  return breweriesToDisplay
 }
 
 //Listens to the input that holds the name of a state
@@ -36,7 +50,8 @@ function listenToStateFormSubmition(){
   {
     event.preventDefault()
     getBreweries().then(breweries => state.breweries = breweries)
-    render()
+    renderBreweriesList(state.typesOfBrewery)
+    renderCityList()
   })
 }
 
@@ -48,10 +63,10 @@ function getBreweries(){
 }
 
 // renders the breweries-list-section inside the list-section based on state.breweries
-function renderBreweriesList() {
+function renderBreweriesList(typeOfBrewery) {
   breweriesList.innerHTML = ''
     
-    for(const brewery of getBreweriesToDisplay()){
+    for(const brewery of getBreweriesToDisplay(typeOfBrewery)){
        
         const breweriesLiEl = document.createElement('li')
         
@@ -130,10 +145,5 @@ function renderCityList() {
   }
 }
 
-function render() {
-  renderBreweriesList()
-  renderCityList()
-}
-
-render()
+listenToFilterByType()
 listenToStateFormSubmition()

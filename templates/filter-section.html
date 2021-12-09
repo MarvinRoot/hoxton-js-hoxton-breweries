@@ -16,10 +16,12 @@
     <button class="clear-all-btn">clear all</button>
   </div>
   <form id="filter-by-city-form">
-    <input type="checkbox" name="chardon" value="chardon" />
+    <input type="checkbox" name="chardon" value="chardon" class="city-checkbox" id="chardon"/>
     <label for="chardon">Chardon</label>
-    <input type="checkbox" name="cincinnati" value="cincinnati" />
+    <input type="checkbox" name="cincinnati" value="cincinnati" class="city-checkbox" id="cincinnati"/>
     <label for="cincinnati">Cincinnati</label>
     // More checkboxes
   </form>
 </aside>
+
+breweryTypes = breweryTypes.map(function(x) { return x.toLowerCase()})
