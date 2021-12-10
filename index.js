@@ -21,6 +21,19 @@ const filterByTypeSelect = document.querySelector('#filter-by-type')
 
 const searchForm = document.querySelector('#search-breweries-form')
 
+const clearAllButton = document.querySelector('.clear-all-btn')
+
+//Listens to the clear all button that clears the checked cities
+function listenToClearAllButton(){
+
+  clearAllButton.addEventListener('click', function(){
+    for(const city of cityForm){
+      state.selectedCities = []
+    }
+    render()
+  })
+}
+
 //Captures the breweries based only on the state with url changes
 function getBreweries(){
     return fetch(`https://api.openbrewerydb.org/breweries?per_page=50&by_state=${stateInput.value}`)
@@ -39,6 +52,7 @@ function listenToStateFormSubmition(){
       state.search = ''
       searchForm.search.value = state.search
       state.selectedBreweryType = []
+      filterByTypeSelect.value = state.selectedBreweryType
       state.selectedCities = []
       render()
     })
@@ -100,8 +114,10 @@ function getBreweriesToDisplay(){
 
 // renders the breweries-list-section inside the list-section based on state.breweries
 function renderBreweriesList() {
-  breweriesList.innerHTML = ''
-    
+  
+  if(state.breweries.length > 0) main.style.display = 'grid'
+  else main.style.display = 'none'
+    breweriesList.innerHTML = ''
     for(const brewery of getBreweriesToDisplay()){
        
         const breweriesLiEl = document.createElement('li')
@@ -193,7 +209,13 @@ function render(){
   renderCityList()
 }
 
-listenToStateFormSubmition()
-listenToFilterByType()
-listenToFilterByCity()
-listenToSearchForm()
+function init(){
+  render()
+  listenToStateFormSubmition()
+  listenToFilterByType()
+  listenToFilterByCity()
+  listenToSearchForm()
+  listenToClearAllButton()
+}
+
+init()
