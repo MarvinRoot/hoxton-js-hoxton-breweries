@@ -22,6 +22,13 @@ const cityForm = document.querySelector('#filter-by-city-form')
 
 const filterByTypeSelect = document.querySelector('#filter-by-type')
 
+// this function captures the breweries based only on the state with url changes
+function getBreweries(){
+    return fetch(`https://api.openbrewerydb.org/breweries?per_page=50&by_state=${stateInput.value}`)
+    .then(resp => resp.json()
+    )
+}
+
 //Listens to the brewery type selection
 function listenToFilterByType(){
   filterByTypeSelect.addEventListener('change', function(){
@@ -32,8 +39,8 @@ function listenToFilterByType(){
   })
 }
 
-//Returns a list of filtered breweries
-function getBreweriesToDisplay(breweryType){
+//Returns a list of filtered breweries based on their type
+function getBreweriesToDisplayByType(breweryType){
   let breweriesToDisplay = state.breweries
   breweriesToDisplay = breweriesToDisplay.filter(brewery =>
     breweryType.includes(brewery.brewery_type)
@@ -41,6 +48,19 @@ function getBreweriesToDisplay(breweryType){
   
     breweriesToDisplay = breweriesToDisplay.slice(0,10)
   return breweriesToDisplay
+}
+
+//Listens to the city checkbox filter
+function listenToFilterByCity(){
+  state.selectedCities = []
+    for(const city of cityForm){
+      if (city.checked) state.selectedCities.push(city.value)
+    }
+}
+
+//Returns  list of filtered breweries based on the cities selected
+function getBreweriesToDisplayByCity(){
+  
 }
 
 //Listens to the input that holds the name of a state
@@ -55,18 +75,11 @@ function listenToStateFormSubmition(){
   })
 }
 
-// this function captures the breweries based only on the state with url changes
-function getBreweries(){
-    return fetch(`https://api.openbrewerydb.org/breweries?per_page=50&by_state=${stateInput.value}`)
-    .then(resp => resp.json()
-    )
-}
-
 // renders the breweries-list-section inside the list-section based on state.breweries
 function renderBreweriesList(typeOfBrewery) {
   breweriesList.innerHTML = ''
     
-    for(const brewery of getBreweriesToDisplay(typeOfBrewery)){
+    for(const brewery of getBreweriesToDisplayByType(typeOfBrewery)){
        
         const breweriesLiEl = document.createElement('li')
         
@@ -142,8 +155,13 @@ function renderCityList() {
     cityCheckboxLabel.textContent = city
 
     cityForm.append(cityCheckboxInput,cityCheckboxLabel)
+
+    cityCheckboxInput.addEventListener('change', function(){
+      listenToFilterByCity()
+    })
   }
 }
 
 listenToFilterByType()
 listenToStateFormSubmition()
+listenToFilterByCity()
