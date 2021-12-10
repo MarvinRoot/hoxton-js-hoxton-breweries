@@ -1,15 +1,14 @@
 const state = {
-    breweries:[],
-    typesOfBrewery: ['micro', 'regional', 'brewpub'],
-    selectedCities: [],
-    selectedBreweryType: [],
-    search: ''
+  breweries: [],
+  typesOfBrewery: ['micro', 'regional', 'brewpub'],
+  selectedCities: [],
+  selectedBreweryType: [],
+  search: ''
 }
 
 const main = document.querySelector('main');
-const breweriesArticle = document.createElement('article')
-const breweriesList = document.createElement('ul')
-breweriesList.setAttribute('class', '.breweries-list')
+const breweriesArticle = document.querySelector('.brewery-list-wrapper')
+const breweriesList = document.querySelector('.breweries-list')
 
 const stateForm = document.querySelector('#select-state-form')
 const stateInput = document.querySelector('#select-state')
@@ -24,10 +23,10 @@ const searchForm = document.querySelector('#search-breweries-form')
 const clearAllButton = document.querySelector('.clear-all-btn')
 
 //Listens to the clear all button that clears the checked cities
-function listenToClearAllButton(){
+function listenToClearAllButton() {
 
-  clearAllButton.addEventListener('click', function(){
-    for(const city of cityForm){
+  clearAllButton.addEventListener('click', function () {
+    for (const city of cityForm) {
       state.selectedCities = []
     }
     render()
@@ -35,17 +34,16 @@ function listenToClearAllButton(){
 }
 
 //Captures the breweries based only on the state with url changes
-function getBreweries(){
-    return fetch(`https://api.openbrewerydb.org/breweries?per_page=50&by_state=${stateInput.value}`)
+function getBreweries() {
+  return fetch(`https://api.openbrewerydb.org/breweries?per_page=50&by_state=${stateInput.value}`)
     .then(resp => resp.json()
     )
 }
 
 //Listens to the input that holds the name of a state
-function listenToStateFormSubmition(){
-  
-  stateForm.addEventListener('submit', event => 
-  {
+function listenToStateFormSubmition() {
+
+  stateForm.addEventListener('submit', event => {
     event.preventDefault()
     getBreweries().then(breweries => {
       state.breweries = breweries
@@ -60,8 +58,8 @@ function listenToStateFormSubmition(){
 }
 
 //Listens to the brewery type selection filter
-function listenToFilterByType(){
-  filterByTypeSelect.addEventListener('change', function(){
+function listenToFilterByType() {
+  filterByTypeSelect.addEventListener('change', function () {
     state.selectedBreweryType = []
     state.selectedBreweryType.push(filterByTypeSelect.value)
     render()
@@ -69,16 +67,16 @@ function listenToFilterByType(){
 }
 
 //Listens to the city checkbox filter
-function listenToFilterByCity(){
+function listenToFilterByCity() {
   state.selectedCities = []
-    for(const city of cityForm){
-      if (city.checked) state.selectedCities.push(city.value)
-    }
+  for (const city of cityForm) {
+    if (city.checked) state.selectedCities.push(city.value)
+  }
 }
 
 //Listens to the search bar above the breweries list
-function listenToSearchForm(){
-  searchForm.addEventListener('submit', function(event){
+function listenToSearchForm() {
+  searchForm.addEventListener('submit', function (event) {
     event.preventDefault()
     state.search = searchForm.search.value
     render()
@@ -86,18 +84,18 @@ function listenToSearchForm(){
 }
 
 //Returns a list of filtered breweries based on the filters
-function getBreweriesToDisplay(){
+function getBreweriesToDisplay() {
   let breweriesToDisplay = state.breweries
-  breweriesToDisplay = breweriesToDisplay.filter(brewery => 
+  breweriesToDisplay = breweriesToDisplay.filter(brewery =>
     state.typesOfBrewery.includes(brewery.brewery_type))
-    
-  if(state.selectedBreweryType.length !== 0){
+
+  if (state.selectedBreweryType.length !== 0) {
     breweriesToDisplay = breweriesToDisplay.filter(brewery =>
       state.selectedBreweryType.includes(brewery.brewery_type)
     )
   }
 
-  if(state.selectedCities.length !== 0){
+  if (state.selectedCities.length !== 0) {
     breweriesToDisplay = breweriesToDisplay.filter(brewery =>
       state.selectedCities.includes(brewery.city)
     )
@@ -106,71 +104,69 @@ function getBreweriesToDisplay(){
   breweriesToDisplay = breweriesToDisplay.filter(brewery =>
     brewery.name.toLowerCase().includes(state.search.toLowerCase())
   )
-  
-  breweriesToDisplay = breweriesToDisplay.slice(0,10)
+
+  breweriesToDisplay = breweriesToDisplay.slice(0, 10)
   return breweriesToDisplay
 
 }
 
 // renders the breweries-list-section inside the list-section based on state.breweries
 function renderBreweriesList() {
-  
-  if(state.breweries.length > 0) main.style.display = 'grid'
+
+  if (state.breweries.length > 0) main.style.display = 'grid'
   else main.style.display = 'none'
-    breweriesList.innerHTML = ''
-    for(const brewery of getBreweriesToDisplay()){
-       
-        const breweriesLiEl = document.createElement('li')
-        
-        const breweryHeader = document.createElement('h2')
-        breweryHeader.textContent = brewery.name
+  breweriesList.innerHTML = ''
+  for (const brewery of getBreweriesToDisplay()) {
 
-        const breweryType = document.createElement('div')
-        breweryType.setAttribute('class', 'type')
-        breweryType.textContent = brewery.brewery_type
+    const breweriesLiEl = document.createElement('li')
 
-        const breweryAddress = document.createElement('section')
-        breweryAddress.setAttribute('class', 'address')
+    const breweryHeader = document.createElement('h2')
+    breweryHeader.textContent = brewery.name
 
-        const breweryAddressH3 = document.createElement('h3')
-        breweryAddressH3.textContent = 'Address:'
-        const breweryAddressStreet = document.createElement('p')
-        breweryAddressStreet.textContent = brewery.street
-        const breweryAddressCity = document.createElement('p')
-        breweryAddressCity.textContent = `${brewery.city}, ${brewery.postal_code}`
-        breweryAddress.append(breweryAddressH3, breweryAddressStreet, breweryAddressCity)
+    const breweryType = document.createElement('div')
+    breweryType.setAttribute('class', 'type')
+    breweryType.textContent = brewery.brewery_type
 
-        const breweryPhone = document.createElement('section')
-        breweryPhone.setAttribute('class','phone')
+    const breweryAddress = document.createElement('section')
+    breweryAddress.setAttribute('class', 'address')
 
-        const breweryPhoneH3 = document.createElement('h3')
-        breweryPhoneH3.textContent= 'Phone:'
-        const breweryPhoneNumber = document.createElement('p')
-        breweryPhoneNumber.textContent = brewery.phone
-        breweryPhone.append(breweryPhoneH3, breweryPhoneNumber)
+    const breweryAddressH3 = document.createElement('h3')
+    breweryAddressH3.textContent = 'Address:'
+    const breweryAddressStreet = document.createElement('p')
+    breweryAddressStreet.textContent = brewery.street
+    const breweryAddressCity = document.createElement('p')
+    breweryAddressCity.textContent = `${brewery.city}, ${brewery.postal_code}`
+    breweryAddress.append(breweryAddressH3, breweryAddressStreet, breweryAddressCity)
 
-        const breweryWebsite = document.createElement('section')
-        breweryWebsite.setAttribute('class','link')
-        
-        const breweryWebsiteLink = document.createElement('a')
-        breweryWebsiteLink.textContent = 'Visit Website'
-        breweryWebsiteLink.setAttribute('href', `${brewery.website_url}`)
-        breweryWebsiteLink.setAttribute('target', 'blank')
-        breweryWebsite.append(breweryWebsiteLink)
+    const breweryPhone = document.createElement('section')
+    breweryPhone.setAttribute('class', 'phone')
 
-        breweriesLiEl.append(breweryHeader,breweryType,breweryAddress,breweryPhone,breweryWebsite)
-        breweriesList.append(breweriesLiEl)
-        breweriesArticle.append(breweriesList)
-        main.append(breweriesArticle)
-    }
+    const breweryPhoneH3 = document.createElement('h3')
+    breweryPhoneH3.textContent = 'Phone:'
+    const breweryPhoneNumber = document.createElement('p')
+    breweryPhoneNumber.textContent = brewery.phone
+    breweryPhone.append(breweryPhoneH3, breweryPhoneNumber)
+
+    const breweryWebsite = document.createElement('section')
+    breweryWebsite.setAttribute('class', 'link')
+
+    const breweryWebsiteLink = document.createElement('a')
+    breweryWebsiteLink.textContent = 'Visit Website'
+    breweryWebsiteLink.setAttribute('href', brewery.website_url)
+    breweryWebsiteLink.setAttribute('target', '_blank')
+    breweryWebsite.append(breweryWebsiteLink)
+
+    breweriesLiEl.append(breweryHeader, breweryType, breweryAddress, breweryPhone, breweryWebsite)
+    breweriesList.append(breweriesLiEl)
+  }
 }
 
 //returns all the cities of the state
-function getCitiesOfSelectedState(){
+function getCitiesOfSelectedState() {
   let cities = []
-  for(const brewery of state.breweries){
+  for (const brewery of state.breweries) {
 
-    if(!cities.includes(brewery.city)){
+    if (!cities.includes(brewery.city)) {
       cities.push(brewery.city)
     }
   }
@@ -180,8 +176,8 @@ function getCitiesOfSelectedState(){
 // renders the cities of every state
 function renderCityList() {
   cityForm.innerHTML = ''
-  
-  for(const city of getCitiesOfSelectedState()){
+
+  for (const city of getCitiesOfSelectedState()) {
     const cityCheckboxInput = document.createElement('input')
     cityCheckboxInput.setAttribute('type', 'checkbox')
     cityCheckboxInput.setAttribute('name', city)
@@ -189,27 +185,27 @@ function renderCityList() {
     cityCheckboxInput.setAttribute('class', 'city-checkbox')
     cityCheckboxInput.setAttribute('id', city)
 
-    if(state.selectedCities.includes(city)) cityCheckboxInput.checked = true
+    if (state.selectedCities.includes(city)) cityCheckboxInput.checked = true
 
     const cityCheckboxLabel = document.createElement('label')
     cityCheckboxLabel.setAttribute('for', city)
     cityCheckboxLabel.textContent = city
 
-    cityForm.append(cityCheckboxInput,cityCheckboxLabel)
+    cityForm.append(cityCheckboxInput, cityCheckboxLabel)
 
-    cityCheckboxInput.addEventListener('change', function(){
+    cityCheckboxInput.addEventListener('change', function () {
       listenToFilterByCity()
       render()
     })
   }
 }
 
-function render(){
+function render() {
   renderBreweriesList()
   renderCityList()
 }
 
-function init(){
+function init() {
   render()
   listenToStateFormSubmition()
   listenToFilterByType()
