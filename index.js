@@ -3,7 +3,7 @@ const state = {
     typesOfBrewery: ['micro', 'regional', 'brewpub'],
     selectedCities: [],
     selectedBreweryType: [],
-    search: ""
+    search: ''
 }
 
 const main = document.querySelector('main');
@@ -34,12 +34,14 @@ function listenToStateFormSubmition(){
   stateForm.addEventListener('submit', event => 
   {
     event.preventDefault()
-    getBreweries().then(breweries => state.breweries = breweries)
-    state.search = ''
-    searchForm.search.value = state.search
-    state.selectedBreweryType = []
-    state.selectedCities = []
-    render()
+    getBreweries().then(breweries => {
+      state.breweries = breweries
+      state.search = ''
+      searchForm.search.value = state.search
+      state.selectedBreweryType = []
+      state.selectedCities = []
+      render()
+    })
   })
 }
 
