@@ -1,8 +1,3 @@
-// State will hold only the list of the breweries displayed on the breweries-list-section. At first,
-// the breweries-list section will be blank. After the user gives us a state name, we render the 
-// list with 10 breweries of the state the user gave us. When the user adds filters, we apply the
-// changes in real time re-rendering the list and displaying breweries based on those filters. 
-// So we just update the state and rerender.
 const state = {
     breweries:[],
     typesOfBrewery: ['micro', 'regional', 'brewpub'],
@@ -29,6 +24,17 @@ function getBreweries(){
     )
 }
 
+//Listens to the input that holds the name of a state
+function listenToStateFormSubmition(){
+  
+  stateForm.addEventListener('submit', event => 
+  {
+    event.preventDefault()
+    getBreweries().then(breweries => state.breweries = breweries)
+    render()
+  })
+}
+
 //Listens to the brewery type selection
 function listenToFilterByType(){
   filterByTypeSelect.addEventListener('change', function(){
@@ -37,6 +43,14 @@ function listenToFilterByType(){
     renderBreweriesList()
     renderCityList()
   })
+}
+
+//Listens to the city checkbox filter
+function listenToFilterByCity(){
+  state.selectedCities = []
+    for(const city of cityForm){
+      if (city.checked) state.selectedCities.push(city.value)
+    }
 }
 
 //Returns a list of filtered breweries based on the filters
@@ -55,25 +69,6 @@ function getBreweriesToDisplay(){
     breweriesToDisplay = breweriesToDisplay.slice(0,10)
     return breweriesToDisplay
 
-}
-
-//Listens to the city checkbox filter
-function listenToFilterByCity(){
-  state.selectedCities = []
-    for(const city of cityForm){
-      if (city.checked) state.selectedCities.push(city.value)
-    }
-}
-
-//Listens to the input that holds the name of a state
-function listenToStateFormSubmition(){
-  
-  stateForm.addEventListener('submit', event => 
-  {
-    event.preventDefault()
-    getBreweries().then(breweries => state.breweries = breweries)
-    render()
-  })
 }
 
 // renders the breweries-list-section inside the list-section based on state.breweries
@@ -136,7 +131,7 @@ function getCitiesOfSelectedState(){
       cities.push(brewery.city)
     }
   }
-  return cities
+  return cities.sort()
 }
 
 // renders the cities of every state
